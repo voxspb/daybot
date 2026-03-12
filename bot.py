@@ -574,6 +574,9 @@ async def balance_month(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def check_tasks(context: ContextTypes.DEFAULT_TYPE):
+
+    if not USER_CHAT_IDS:
+        return
     global USER_CHAT_ID
 
     if not USER_CHAT_ID:
@@ -613,13 +616,14 @@ async def check_tasks(context: ContextTypes.DEFAULT_TYPE):
 
         suffix = " [daily]" if is_daily else ""
 
-        await context.bot.send_message(
-            chat_id=USER_CHAT_ID,
-            text=f"Напоминание:\n{task_time} — {task_text}{suffix}",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+for chat_id in USER_CHAT_IDS:
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=f"Напоминание:\n{task_time} — {task_text}{suffix}",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
-        log_action(task_id, "reminded")
+    log_action(task_id, "reminded")
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
