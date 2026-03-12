@@ -577,53 +577,38 @@ async def check_tasks(context: ContextTypes.DEFAULT_TYPE):
 
     if not USER_CHAT_IDS:
         return
-    global USER_CHAT_ID
-
-    if not USER_CHAT_ID:
-        return
 
     now = datetime.now().strftime("%H:%M")
-    today_str = datetime.now().strftime("%Y-%m-%d")
 
     cursor.execute(
-        "SELECT id, time, text, is_daily FROM tasks WHERE time = ? ORDER BY id",
+        "SELECT id, time, text, is_daily FROM tasks WHERE time = ?",
         (now,)
     )
+
     tasks = cursor.fetchall()
 
     for task_id, task_time, task_text, is_daily in tasks:
-        cursor.execute("""
-            SELECT COUNT(*)
-            FROM task_log
-            WHERE task_id = ?
-              AND action = ?
-              AND date(created_at, 'localtime') = ?
-        """, (task_id, "reminded", today_str))
-        reminded_today = cursor.fetchone()[0]
-
-        if reminded_today > 0:
-            continue
 
         keyboard = [
             [
                 InlineKeyboardButton("✅ Сделал", callback_data=f"done:{task_id}"),
-                InlineKeyboardButton("⏰ +15 мин", callback_data=f"snooze15:{task_id}"),
+                InlineKeyboardButton("⏰ +15 мин", callback_data=f"snooze15:{task_id}")
             ],
             [
-                InlineKeyboardButton("❌ Пропустить", callback_data=f"skip:{task_id}"),
+                InlineKeyboardButton("❌ Пропустить", callback_data=f"skip:{task_id}")
             ]
         ]
 
         suffix = " [daily]" if is_daily else ""
 
-for chat_id in USER_CHAT_IDS:
-    await context.bot.send_message(
-        chat_id=chat_id,
-        text=f"Напоминание:\n{task_time} — {task_text}{suffix}",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+        for chat_id in USER_CHAT_IDS:
+            await context.bot.send_message(
+                chat_id=chat_id,
+                text=f"Напоминание:\n{task_time} — {task_text}{suffix}",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
 
-    log_action(task_id, "reminded")
+        log_action(task_id, "reminded")
 
 
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
