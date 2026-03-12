@@ -737,19 +737,21 @@ async def evening_report(context: ContextTypes.DEFAULT_TYPE):
         text=text
     )
 async def backup_db(context: ContextTypes.DEFAULT_TYPE):
-    global USER_CHAT_ID
 
-    if not USER_CHAT_ID:
+    if not USER_CHAT_IDS:
         return
 
     try:
         with open("tasks.db", "rb") as f:
-            await context.bot.send_document(
-                chat_id=USER_CHAT_ID,
-                document=f,
-                filename="tasks_backup.db",
-                caption="📦 Автобэкап базы"
-            )
+
+            for chat_id in USER_CHAT_IDS:
+                await context.bot.send_document(
+                    chat_id=chat_id,
+                    document=f,
+                    filename="tasks_backup.db",
+                    caption="📦 Автобэкап базы"
+                )
+
     except Exception as e:
         print("Ошибка бэкапа:", e)
 async def quick_spend(update, context):
