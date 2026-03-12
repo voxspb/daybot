@@ -808,10 +808,8 @@ def main():
     job_queue.run_daily(evening_report, time=time(hour=23, minute=0))
 
     print("Бот запущен...")
-    app.run_polling(
-    drop_pending_updates=True,
-    allowed_updates=[]
-)
+    print("Бот запущен...")
+app.run_polling(drop_pending_updates=True)
 
 
 if __name__ == "__main__":
