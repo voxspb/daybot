@@ -783,23 +783,7 @@ def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("add", add))
-    app.add_handler(CommandHandler("today", today))
-    app.add_handler(CommandHandler("stats", stats))
-    app.add_handler(CommandHandler("weekly", weekly))
-    app.add_handler(CommandHandler("streaks", streaks))
-    app.add_handler(CommandHandler("delete", delete))
-
-    app.add_handler(CommandHandler("spend", spend))
-    app.add_handler(CommandHandler("income", income))
-    app.add_handler(CommandHandler("money_today", money_today))
-    app.add_handler(CommandHandler("money_week", money_week))
-    app.add_handler(CommandHandler("money_month", money_month))
-    app.add_handler(CommandHandler("money_categories", money_categories))
-    app.add_handler(CommandHandler("balance_today", balance_today))
-    app.add_handler(CommandHandler("balance_month", balance_month))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, quick_spend))
-
+    ...
     app.add_handler(CallbackQueryHandler(button))
 
     job_queue = app.job_queue
@@ -808,8 +792,7 @@ def main():
     job_queue.run_daily(evening_report, time=time(hour=23, minute=0))
 
     print("Бот запущен...")
-    print("Бот запущен...")
-app.run_polling(drop_pending_updates=True)
+    app.run_polling(drop_pending_updates=True)
 
 
 if __name__ == "__main__":
