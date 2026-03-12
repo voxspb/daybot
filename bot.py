@@ -12,6 +12,10 @@ from telegram.ext import (
     filters,
 )
 TOKEN = os.getenv("DAYBOT_TOKEN", "")
+ALLOWED_USERS = {
+    805101340,
+    987654321
+}
 if not TOKEN:
     raise RuntimeError("Не задан DAYBOT_TOKEN")
 
@@ -63,7 +67,7 @@ if "is_daily" not in columns:
     cursor.execute("ALTER TABLE tasks ADD COLUMN is_daily INTEGER NOT NULL DEFAULT 0")
     conn.commit()
 
-USER_CHAT_ID = None
+ALLOWED_USERS = set()
 
 
 def log_action(task_id: int, action: str) -> None:
@@ -180,7 +184,7 @@ def get_sum(query: str, params=()):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global USER_CHAT_ID
-    USER_CHAT_ID = update.effective_chat.id
+    ALLOWED_USERS.add(update.effective_chat.id)
 
     text = (
         "Бот режима дня запущен.\n\n"
@@ -746,7 +750,22 @@ async def evening_report(context: ContextTypes.DEFAULT_TYPE):
         chat_id=USER_CHAT_ID,
         text=text
     )
+async def backup_db(context: ContextTypes.DEFAULT_TYPE):
+    global USER_CHAT_ID
 
+    if not USER_CHAT_ID:
+        return
+
+    try:
+        with open("tasks.db", "rb") as f:
+            await context.bot.send_document(
+                chat_id=USER_CHAT_ID,
+                document=f,
+                filename="tasks_backup.db",
+                caption="📦 Автобэкап базы"
+            )
+    except Exception as e:
+        print("Ошибка бэкапа:", e)
 async def quick_spend(update, context):
 
     if not update.message:
@@ -781,7 +800,11 @@ async def quick_spend(update, context):
     )
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
-
+    async def auth(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id not in ALLOWED_USERS:
+        await update.message.reply_text("Нет доступа")
+        return False
+    return True
     app.add_handler(CommandHandler("start", start))
     ...
     app.add_handler(CallbackQueryHandler(button))
@@ -790,6 +813,11 @@ def main():
     job_queue.run_repeating(check_tasks, interval=60, first=5)
     job_queue.run_daily(morning_plan, time=time(hour=9, minute=0))
     job_queue.run_daily(evening_report, time=time(hour=23, minute=0))
+    job_queue.run_repeating(
+    backup_db,
+    interval=4 * 24 * 60 * 60,
+    first=60
+)
 
     print("Бот запущен...")
     app.run_polling(drop_pending_updates=True)
