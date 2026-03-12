@@ -5,7 +5,7 @@ from database import init_db
 from modules.tasks import register_tasks
 from modules.finance import register_finance
 from modules.reminders import register_reminders
-
+from modules.menu import register_menu
 
 def main():
     init_db()
@@ -15,6 +15,7 @@ def main():
     register_tasks(app)
     register_finance(app)
     register_reminders(app)
+    register_menu(app)
 
     print("Бот запущен...")
     app.run_polling(
