@@ -16,6 +16,7 @@ ALLOWED_USERS = {
     805101340,
     987654321
 }
+USER_CHAT_IDS = set()
 if not TOKEN:
     raise RuntimeError("Не задан DAYBOT_TOKEN")
 
@@ -183,7 +184,7 @@ def get_sum(query: str, params=()):
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global USER_CHAT_ID
+    USER_CHAT_IDS.add(update.effective_chat.id)
     ALLOWED_USERS.add(update.effective_chat.id)
 
     text = (
@@ -204,13 +205,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/money_month\n"
         "/money_categories\n"
         "/balance_today\n"
-        "/balance_month\n\n"
-        "Примеры:\n"
-        "/add 10:00 зарядка\n"
-        "/add 22:30 чтение daily\n"
-        "/spend 500 продукты\n"
-        "/income 2500 подработка"
+        "/balance_month\n"
     )
+
     await update.message.reply_text(text)
 
 
