@@ -800,24 +800,42 @@ async def quick_spend(update, context):
     )
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
-    async def auth(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.id not in ALLOWED_USERS:
-        await update.message.reply_text("Нет доступа")
-        return False
-    return True
+
+    # команды
     app.add_handler(CommandHandler("start", start))
-    ...
+    app.add_handler(CommandHandler("add", add))
+    app.add_handler(CommandHandler("today", today))
+    app.add_handler(CommandHandler("stats", stats))
+    app.add_handler(CommandHandler("weekly", weekly))
+    app.add_handler(CommandHandler("streaks", streaks))
+    app.add_handler(CommandHandler("delete", delete))
+
+    app.add_handler(CommandHandler("spend", spend))
+    app.add_handler(CommandHandler("income", income))
+    app.add_handler(CommandHandler("money_today", money_today))
+    app.add_handler(CommandHandler("money_week", money_week))
+    app.add_handler(CommandHandler("money_month", money_month))
+    app.add_handler(CommandHandler("money_categories", money_categories))
+    app.add_handler(CommandHandler("balance_today", balance_today))
+    app.add_handler(CommandHandler("balance_month", balance_month))
+
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, quick_spend))
+
+    # кнопки
     app.add_handler(CallbackQueryHandler(button))
 
+    # задачи по расписанию
     job_queue = app.job_queue
     job_queue.run_repeating(check_tasks, interval=60, first=5)
     job_queue.run_daily(morning_plan, time=time(hour=9, minute=0))
     job_queue.run_daily(evening_report, time=time(hour=23, minute=0))
+
+    # бэкап раз в 4 дня
     job_queue.run_repeating(
-    backup_db,
-    interval=4 * 24 * 60 * 60,
-    first=60
-)
+        backup_db,
+        interval=4 * 24 * 60 * 60,
+        first=60
+    )
 
     print("Бот запущен...")
     app.run_polling(drop_pending_updates=True)
