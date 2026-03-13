@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, CallbackQueryHandler, ContextTypes
-from telegram import ReplyKeyboardMarkup]
+from telegram import ReplyKeyboardMarkup
 
 from database import cursor, conn, log_action
 from config import ALLOWED_USERS
