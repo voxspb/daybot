@@ -28,8 +28,9 @@ def main():
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
+        url_path=TOKEN,
         webhook_url=f"{BASE_URL}/{TOKEN}"
-    )
+)
 
 
 if __name__ == "__main__":
