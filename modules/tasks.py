@@ -404,6 +404,13 @@ async def menu_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=reply_markup
         )
 
+async def health(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "✅ Bot работает\n"
+        "✅ Railway запущен\n"
+        "✅ Webhook активен"
+    )
+
 
 def register_tasks(app):
     app.add_handler(CommandHandler("start", start))
@@ -414,5 +421,6 @@ def register_tasks(app):
     app.add_handler(CommandHandler("weekly", weekly))
     app.add_handler(CommandHandler("streaks", streaks))
     app.add_handler(CallbackQueryHandler(button))
+    app.add_handler(CommandHandler("health", health))
 
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu_router))

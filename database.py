@@ -44,6 +44,16 @@ def init_db():
     )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS receipts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT,
+        store TEXT,
+        amount REAL,
+        photo TEXT
+)
+""")
+
     conn.commit()
 
     cursor.execute("PRAGMA table_info(tasks)")
