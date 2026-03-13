@@ -1,4 +1,4 @@
-import os
+	import os
 import re
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
@@ -50,7 +50,7 @@ async def start_scan(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def scan_receipt(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not context.user_data.get("waiting_for_receipt"):
-    return
+        return
 
     photo = update.message.photo[-1]
     file = await photo.get_file()
