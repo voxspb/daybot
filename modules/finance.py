@@ -26,7 +26,15 @@ def register_finance(app):
 
     app.add_handler(
         MessageHandler(
-            filters.Regex("^💸 Финансы$"),
+            filters.TEXT & filters.Regex("Финансы"),
             finance_menu
         )
     )
+
+
+def get_sum():
+    return 0
+
+
+def fmt_money(value):
+    return f"{value:.2f}"
