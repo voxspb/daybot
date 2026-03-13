@@ -13,15 +13,16 @@ def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     register_tasks(app)
+    register_menu(app)
     register_finance(app)
     register_reminders(app)
-    register_menu(app)
 
     print("Бот запущен...")
     app.run_polling(
-        drop_pending_updates=True,
-        allowed_updates=[]
-    )
+    drop_pending_updates=True,
+    close_loop=False,
+    stop_signals=None,
+)
 
 
 if __name__ == "__main__":

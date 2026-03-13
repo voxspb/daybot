@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram import ReplyKeyboardMarkup]
 
 from database import cursor, conn, log_action
 from config import ALLOWED_USERS
@@ -125,27 +126,26 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     USER_CHAT_IDS.add(update.effective_chat.id)
 
+    keyboard = [
+        ["🍽 Питание", "💸 Финансы"],
+        ["📅 День", "👶 Ася"],
+        ["📊 Аналитика"]
+    ]
+
+    reply_markup = ReplyKeyboardMarkup(
+        keyboard,
+        resize_keyboard=True
+    )
+
     text = (
         "Бот режима дня запущен.\n\n"
-        "Задачи:\n"
-        "/add HH:MM задача\n"
-        "/add HH:MM задача daily\n"
-        "/today\n"
-        "/stats\n"
-        "/weekly\n"
-        "/streaks\n"
-        "/delete ID\n\n"
-        "Финансы:\n"
-        "/spend сумма категория\n"
-        "/income сумма источник\n"
-        "/money_today\n"
-        "/money_week\n"
-        "/money_month\n"
-        "/money_categories\n"
-        "/balance_today\n"
-        "/balance_month"
+        "Открыл главное меню 👇"
     )
-    await update.message.reply_text(text)
+
+    await update.message.reply_text(
+        text,
+        reply_markup=reply_markup
+    )
 
 
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
