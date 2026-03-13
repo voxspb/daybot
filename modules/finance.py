@@ -1,4 +1,7 @@
 import os
+import pytesseract
+from PIL import Image
+
 from database import cursor, conn
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes, MessageHandler, filters
@@ -34,6 +37,13 @@ async def scan_receipt(update: Update, context: ContextTypes.DEFAULT_TYPE):
     file_path = f"receipts/{photo.file_id}.jpg"
     await file.download_to_drive(file_path)
 
+    # OCR распознавание
+    try:
+        image = Image.open(file_path)
+        text = pytesseract.image_to_string(image)
+    except Exception as e:
+        text = f"OCR ошибка: {e}"
+
     cursor.execute(
         "INSERT INTO receipts (date, photo) VALUES (?, ?)",
         (update.message.date.strftime("%Y-%m-%d"), file_path)
@@ -41,7 +51,7 @@ async def scan_receipt(update: Update, context: ContextTypes.DEFAULT_TYPE):
     conn.commit()
 
     await update.message.reply_text(
-        "📷 Чек сохранён.\n\nПозже добавим распознавание."
+        f"📷 Чек сохранён\n\nРаспознанный текст:\n\n{text[:1000]}"
     )
 
 
