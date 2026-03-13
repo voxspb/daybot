@@ -32,6 +32,7 @@ def register_finance(app):
     )
 
 
+
 def get_sum():
     return 0
 
