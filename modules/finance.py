@@ -1,4 +1,4 @@
-	import os
+import os
 import re
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
