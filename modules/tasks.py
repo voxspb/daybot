@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram.ext import CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
 from telegram import ReplyKeyboardMarkup
 
 from database import cursor, conn, log_action
@@ -362,6 +362,48 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text("Неизвестное действие")
 
+async def menu_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    text = update.message.text
+
+    if text == "💸 Финансы":
+
+        keyboard = [
+            ["➕ Добавить трату"],
+            ["📷 Скан чека"],
+            ["📈 Динамика цен"],
+            ["⬅️ Назад"]
+        ]
+
+        reply_markup = ReplyKeyboardMarkup(
+            keyboard,
+            resize_keyboard=True
+        )
+
+        await update.message.reply_text(
+            "💸 Финансы",
+            reply_markup=reply_markup
+        )
+        return
+
+    if text == "⬅️ Назад":
+
+        keyboard = [
+            ["🍽 Питание", "💸 Финансы"],
+            ["📅 День", "👶 Ася"],
+            ["📊 Аналитика"]
+        ]
+
+        reply_markup = ReplyKeyboardMarkup(
+            keyboard,
+            resize_keyboard=True
+        )
+
+        await update.message.reply_text(
+            "🏠 Главное меню",
+            reply_markup=reply_markup
+        )
+
 
 def register_tasks(app):
     app.add_handler(CommandHandler("start", start))
@@ -372,3 +414,5 @@ def register_tasks(app):
     app.add_handler(CommandHandler("weekly", weekly))
     app.add_handler(CommandHandler("streaks", streaks))
     app.add_handler(CallbackQueryHandler(button))
+
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu_router))
